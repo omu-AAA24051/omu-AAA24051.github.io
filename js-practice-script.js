@@ -124,7 +124,6 @@ function updateItemList() {
     
     listDiv.innerHTML = itemsHTML;
     }
-}
 
 // 初期表示
 updateItemList();

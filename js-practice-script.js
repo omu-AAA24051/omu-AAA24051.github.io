@@ -3,12 +3,12 @@
 // 課題1: 変数と関数
 function task1() {
     // TODO: 以下の変数を作成してください
-    let name = "山田太郎"; // あなたの名前を入力
-    let age = 25;   // あなたの年齢を入力
-    let favoriteColor = "青"; // 好きな色を入力
+    let name = "白井京太郎"; // あなたの名前を入力
+    let age = 21;   // あなたの年齢を入力
+    let favoriteColor = "白"; // 好きな色を入力
     
     // TODO: 趣味の配列を作成してください
-    let hobbies = ["プログラミング", "読書", "映画鑑賞"]; // 例: ["プログラミング", "読書", "映画鑑賞"]
+    let hobbies = ["マジック", "アニメ鑑賞", "ゲーム"]; // 例: ["プログラミング", "読書", "映画鑑賞"]
     
     // 結果を表示
     const output = document.getElementById('task1-output');
@@ -113,15 +113,16 @@ function updateItemList() {
     const itemList = document.getElementById('item-list');
     if (items.length === 0) {
         itemList.innerHTML = '<p>アイテムがありません</p>';
-    } else {
-        itemList.innerHTML = `
-            <h4>アイテム一覧（${items.length}個）:</h4>
-            <ul>
-                ${items.map((item, index) => 
-                    `<li>${item} <button onclick="removeItem(${index})">削除</button></li>`
-                ).join('')}
-            </ul>
-        `;
+        return;
+    }    
+    const itemsHTML = items.map((item, index) => `
+        <div style="margin: 5px 0; padding: 10px; border: 1px solid #ddd;">
+            ${index + 1}. ${item}
+            <button onclick="removeItem(${index})">削除</button>
+        </div>
+    `).join('');
+    
+    listDiv.innerHTML = itemsHTML;
     }
 }
 

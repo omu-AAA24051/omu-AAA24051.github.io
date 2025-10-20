@@ -110,9 +110,9 @@ function clearItems() {
 }
 
 function updateItemList() {
-    const itemList = document.getElementById('item-list');
+    const listDiv = document.getElementById('item-list');
     if (items.length === 0) {
-        itemList.innerHTML = '<p>アイテムがありません</p>';
+        listDiv.innerHTML = '<p>アイテムがありません</p>';
         return;
     }    
     const itemsHTML = items.map((item, index) => `

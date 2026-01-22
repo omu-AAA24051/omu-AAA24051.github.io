@@ -60,43 +60,14 @@
             // 地理院地図インスタンスへレイヤーを追加
             map.addLayer(chiriinLayer);
 
-            L.control.layers({
-                "OpenStreetMap": backgroundLayer,
-                "地理院地図（標準）": chiriinLayer
-            }).addTo(map);
-
-            // ピン定義
             const nakamozu_marker = L.marker([34.544865,135.506274]); // ピン＝Markerを初期化
             nakamozu_marker.bindPopup('なかもずキャンパスC棟'); // ポップアップを紐付け
             map.addLayer(nakamozu_marker); // ピンを地図上に追加
 
             // 下のようにも書ける
             L.marker([34.592331,135.505276]).bindPopup('杉本キャンパス').addTo(map);
-
-            map.attributionControl.addAttribution(
-                '<a href="https://nlftp.mlit.go.jp/ksj/gml/datalist/KsjTmplt-P29-v2_0.html">国土数値情報 - 学校データ</a>',
-            );
-            // GeoJSONレイヤーを作成
-            fetch('./P29-21_27.geojson') // 大阪府の学校データのGeoJSONを非同期読み込み
-	            .then((res) => res.json())
-	            .then((json) => {
-	            // GeoJSONレイヤーを作成
-	            L.geoJSON(json)
-		            .bindPopup((layer) => layer.feature.properties.P29_004)    // ポップアップで学校名を表示
-		            .addTo(map);  
-	            });
-
-            fetch('./P29-21.geojson') // 全国分の学校データ（5万件超）のGeoJSONを非同期読み込み
-                .then((res) => res.json())
-                .then((json) => {
-                // クラスタリングレイヤーを作成し地図に追加
-                const markers = L.markerClusterGroup()
-                    .bindPopup(
-                        (layer) => layer.feature.properties.P29_004, // ポップアップで学校名を表示
-                    )
-                    .addTo(map);
-                L.geoJSON(json).addTo(markers); // クラスタリングレイヤーにGeoJSONデータをセット
-            });
+            L.marker([34.7273185,135.6937155]).bindPopup('四條畷市立田原小学校').addTo(map);
+            L.marker([34.7394663,135.6451071]).bindPopup('四條畷市立四條畷小学校').addTo(map);
 
             // ローカルPC上のOSRMサーバで杉本キャンパスからなかもずキャンパスまでのルートを検索するURL
             const url = 'https://routing.openstreetmap.de/routed-car/route/v1/driving/135.505276,34.592331;135.506274,34.544865?geometries=geojson&overview=full'
@@ -115,6 +86,27 @@
                 const bounds = routeLayer.getBounds();
                 map.fitBounds(bounds); 
             }
+
+            addRouteLayer();
+
+            const url1 = 'https://routing.openstreetmap.de/routed-car/route/v1/driving/135.6937155,34.7273185;135.6451071,34.7394663?geometries=geojson&overview=full'
+
+            async function addRouteLayer2(){
+                const response = await fetch(url1);
+                const json = await response.json();
+                routeLayer = L.geoJSON(json['routes'][0]['geometry'],{
+                    "color": "red",
+                    "weight": 6,
+                    "opacity": 0.65
+                });                            
+                routeLayer.addTo(map);
+      
+                // 地図をルートに合うように調整
+                const bounds = routeLayer.getBounds();
+                map.fitBounds(bounds); 
+            }
+            
+            addRouteLayer2();
 
             var LayerControl = L.control.layers({
                 "OpenStreetMap": backgroundLayer,
@@ -135,21 +127,6 @@
                     // GeoJSONレイヤに地図がフィットするように表示範囲を自動調整
                     map.fitBounds(selected_area.getBounds());
             });
-
-            // 行政区域
-            fetch("./N03-23_27_230101.geojson")
-                .then(res => res.json())
-                .then(data => {
-                    const areaLayer = L.geoJSON(
-                        data.features.filter(f => f.properties.N03_004 === "四條畷市")
-                    );
-                areaLayer.bindPopup("四條畷市");
-                areaLayer.addTo(map);
-                LayerControl.addOverlay(areaLayer, "行政区域 四條畷市");
-                });
-
-            // 避難ルート（OSRM）
-            addRouteLayer();
 
             //スケールバー
             L.control.scale().addTo(map);

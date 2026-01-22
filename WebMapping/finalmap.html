@@ -115,8 +115,11 @@
                 const bounds = routeLayer.getBounds();
                 map.fitBounds(bounds); 
             }
-            // 地図にルートを追加
-            addRouteLayer();
+
+            var LayerControl = L.control.layers({
+                "OpenStreetMap": backgroundLayer,
+                "地理院地図（標準）": chiriinLayer
+            }).addTo(map);
 
             // 行政区域レイヤーを作成
             fetch("./N03-23_27_230101.geojson") // 行政区域データを非同期読み込み
@@ -132,6 +135,21 @@
                     // GeoJSONレイヤに地図がフィットするように表示範囲を自動調整
                     map.fitBounds(selected_area.getBounds());
             });
+
+            // 行政区域
+            fetch("./N03-23_27_230101.geojson")
+                .then(res => res.json())
+                .then(data => {
+                    const areaLayer = L.geoJSON(
+                        data.features.filter(f => f.properties.N03_004 === "四條畷市")
+                    );
+                areaLayer.bindPopup("四條畷市");
+                areaLayer.addTo(map);
+                LayerControl.addOverlay(areaLayer, "行政区域 四條畷市");
+                });
+
+            // 避難ルート（OSRM）
+            addRouteLayer();
 
             //スケールバー
             L.control.scale().addTo(map);
